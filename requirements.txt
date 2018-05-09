@@ -1,0 +1,3 @@
+PyYAML==3.12
+python_terraform
+gitpython

@@ -1,0 +1,9 @@
+[
+  {
+    "label": "Mirror Server IP",
+    "fieldName": "mirror_server_ip",
+    "tooltip": "Mirror Server IP to deploy PNDA",
+    "placeholder": "Mirror server IP",
+    "dataType": "string"
+  }
+]

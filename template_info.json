@@ -1,0 +1,8 @@
+{
+  "name": "PNDA-pico-rhel-aws",
+  "type": "terraform",
+  "target_cloud": "aws",
+  "description": "Deploys PNDA - pico cluster in aws. Uses latest RHEL base image for launching instances Ansible for configuration. Tested on us-east-1 region",
+  "prerequisites": "Git needs to be installed",
+  "limitations": ""
+}

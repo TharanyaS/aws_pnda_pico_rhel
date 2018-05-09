@@ -1,0 +1,11 @@
+{
+    "PR_FS_TYPE": "local",
+    "PR_FS_LOCATION_PATH": "/opt/pnda/packages",
+    "PLATFORM_GIT_BRANCH": "4.0",
+    "HADOOP_DISTRO": "HDP",
+    "REJECT_OUTBOUND": "NO",
+    "PNDA_INTERNAL_NETWORK": "eth0",
+    "PNDA_INGEST_NETWORK": "eth0",
+    "ADD_ONLINE_REPOS": "YES"
+}
+

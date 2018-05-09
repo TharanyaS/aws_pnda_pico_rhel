@@ -1,0 +1,192 @@
+ec2_access:
+  # API key for full API access for use creating PNDA
+  # These keys are only ever stored on the client
+  AWS_ACCESS_KEY_ID: {{access_key}}
+  AWS_SECRET_ACCESS_KEY: {{secret_key}}
+
+  # AWS region to create PNDA ec2 instances in
+  AWS_REGION: {{region}}
+  AWS_AVAILABILITY_ZONE: eu-west-1a
+
+  # The user name to use when logging into the AWS ec2 instances
+  # Ubuntu: ubuntu
+  # Redhat: ec2-user
+  # CentOS: centos
+  OS_USER: {{os_user}}
+
+cloud_formation_parameters:
+  # Settings in this section are passed through as parameters when
+  # creating the cloud formation template. The cloud formation template must
+  # define a matching input parameter for each value listed here.
+
+  # Base image to use, use the default AWS Ubuntu/Redhat image for the AWS region
+  # Ubuntu: 64-bit Ubuntu 14.04
+  # Redhat: Red Hat Enterprise Linux 7
+  imageId: ami-f95ef58a
+
+  # CIDR specifying the address range that may access the created PNDA instances
+  whitelistSshAccess: 0.0.0.0/0
+
+  # CIDR specifying the address range for the VPC
+  vpcCidr: 10.0.0.0/16
+
+  # CIDR specifying the address range for the public subnet (bastion access)
+  publicSubnetCidr: 10.0.0.0/24
+
+  # CIDR specifying the address range for the private subnet (PNDA)
+  privateSubnetCidr: 10.0.1.0/24
+
+  # CIDR specifying the address range for the public producer subnet (Kafka ingress)
+  publicProducerSubnetCidr: 10.0.2.0/24
+
+  # Address of gateway for Kakfa interface on private subnet
+  privateSubnetGateway: 10.0.1.1
+
+  # Address of gateway for Kakfa interface on public producer subnet
+  publicProducerSubnetGateway: 10.0.2.1
+
+platform_salt:
+  # Use either PLATFORM_GIT_REPO_URI + PLATFORM_GIT_BRANCH or PLATFORM_SALT_LOCAL
+
+  # URI of platform salt git repository
+  PLATFORM_GIT_REPO_URI: https://github.com/pndaproject/platform-salt.git
+
+  # Host name of server for platform salt git repository. Make sure to set this if
+  # authenticated ssh access (using git.pem) to the git repo is desired.
+  PLATFORM_GIT_REPO_HOST: github.com
+
+  # The branch to select from PLATFORM_GIT_REPO_URI
+  PLATFORM_GIT_BRANCH: {{ branch }}
+
+  # Local path to folder containing a clone of the platform salt repository
+  # PLATFORM_SALT_LOCAL: /path/to/platform-salt
+
+pnda_application_repo:
+  # Type of storage to use for PNDA application packages
+  #   s3     - AWS S3. Also set PNDA_APPS_CONTAINER, PNDA_APPS_FOLDER, PNDA_APPS_REGION, PNDA_APPS_ACCESS_KEY_ID, PNDA_APPS_SECRET_ACCESS_KEY
+  #   sshfs  - standard file system. Also set PR_FS_LOCATION_PATH, PR_SSHFS_USER, PR_SSHFS_HOST, PR_SSHFS_PATH and PR_SSHFS_KEY
+  #   local  - local filesystem on the package repository service server. Also set PR_FS_LOCATION_PATH.
+  PR_FS_TYPE: {{ PR_FS_TYPE }}
+
+  # S3 container to use for PNDA application packages
+  PNDA_APPS_CONTAINER: pnda-apps
+
+  # Name of folder within PNDA_APPS_CONTAINER that contains the PNDA application packages
+  PNDA_APPS_FOLDER: releases
+
+  # AWS region that contains the PNDA_APPS_CONTAINER bucket
+  PNDA_APPS_REGION: eu-west-1
+
+  # API key for s3 access to PNDA_APPS_CONTAINER. These keys are stored on the cloud instances so should be restricted
+  # only allow access to the PNDA_APPS_CONTAINER bucket
+  PNDA_APPS_ACCESS_KEY_ID: {{ access_key }}
+  PNDA_APPS_SECRET_ACCESS_KEY: {{ secret_key }}
+
+  # Path on file system if PR_FS_TYPE is 'local' or 'sshfs'
+  PR_FS_LOCATION_PATH: /opt/pnda/packages
+
+  # SSH accessed file system to use for PNDA application packages
+  PR_SSHFS_USER: ubuntu
+  PR_SSHFS_HOST: 127.0.0.1
+  PR_SSHFS_PATH: /mnt/packages
+  PR_SSHFS_KEY: key.pem
+
+pnda_data_archive:
+  # S3 container to use for archiving PNDA datasets
+  PNDA_ARCHIVE_CONTAINER: pnda-archive
+
+  # AWS region that contains the PNDA_ARCHIVE_CONTAINER bucket
+  PNDA_ARCHIVE_REGION: eu-west-1
+
+  # API key for s3 access to PNDA_ARCHIVE_CONTAINER. These keys are stored on the cloud instances so should be restricted
+  # only allow access to the PNDA_ARCHIVE_CONTAINER bucket
+  PNDA_ARCHIVE_ACCESS_KEY_ID: {{ access_key }}
+  PNDA_ARCHIVE_SECRET_ACCESS_KEY: {{ secret_key }}
+
+ntp:
+  # Optional ntp servers. Use this if the standard NTP servers on the Internet cannot be reached
+  # and a local NTP server has been configured. PNDA will not work without NTP.
+  # example format: 'xxx.ntp.org'
+  #For REJECT_OUTBOUND="YES" then NTP server/s must.
+  NTP_SERVERS:
+    - ntp.ubuntu.com
+  # - 91.189.89.199
+
+mirrors:
+  # Mirror of resources required for provisioning PNDA, see PNDA guide for instructions on how to set this up
+  PNDA_MIRROR: http://{{mirror_ip}}
+
+hadoop:
+  # Hadoop distribution to install
+  # Valid values are:
+  # - HDP
+  # - CDH
+  HADOOP_DISTRO: {{ HADOOP_DISTRO }}
+
+elk-cluster:
+  # number of master nodes
+  MASTER_NODES: 0
+  # number of data nodes
+  DATA_NODES: 0
+  # number of ingest nodes
+  INGEST_NODES: 0
+  # number of coordinating nodes
+  COORDINATING_NODES: 0
+
+  # How many nodes that do all roles (simple setup). Please use eithar this simple setup or the above advanced setup. DON'T USE BOTH
+  MULTI_ROLE_NODES: 0
+
+  # number of logstash nodes
+  LOGSTASH_NODES: 0
+
+connectivity:
+  # Deploy an iptables ruleset to every node preventing outbound access to all hosts except the PNDA_MIRROR, NTP_SERVER and specified CLIENT_IP. Specify YES to enable.
+  REJECT_OUTBOUND: {{ REJECT_OUTBOUND }}
+  # If using REJECT_OUTBOUND, the IP address of the client that created PNDA
+  CLIENT_IP: 1.1.1.1
+  # Add online repositories for yum, apt-get, pip, etc alongside PNDA mirror
+  ADD_ONLINE_REPOS: {{ ADD_ONLINE_REPOS }}
+  # RPM Extras repository to enable when ADD_ONLINE_REPOS=YES
+  RPM_EXTRAS_REPO_NAME: rhui-REGION-rhel-server-optional
+  # RPM Optional repository to enable when ADD_ONLINE_REPOS=YES
+  RPM_OPTIONAL_REPO_NAME: rhui-REGION-rhel-server-extras
+
+network_interfaces:
+  PNDA_INTERNAL_NETWORK: {{ PNDA_INTERNAL_NETWORK }}
+  PNDA_INGEST_NETWORK: {{ PNDA_INGEST_NETWORK }}
+
+cli:
+  # Maximum number of outbound connections that the CLI will attempt to open at once
+  # Consider increasing this when creating clusters with more than 100 nodes to speed
+  # up PNDA creation time.
+  MAX_SIMULTANEOUS_OUTBOUND_CONNECTIONS: 100
+
+security:
+  # The security mode to be enforced. Options are:
+  # - 'disabled': The security material will be ignored.  
+  # - 'permissive': The security material will be used if present.
+  # - 'enforced': The security material will be required to be present and conforment to the associated requirements.
+  SECURITY_MODE: 'permissive'
+
+  # The path were to find the security material (certificate/key).
+  # The directory should be structured as defined in this' repo's directory structure with the same name.
+  # If present, the security material should conform to the guidelines defined in the README.md file in
+  # the containing sub dorectory.
+  SECURITY_MATERIAL_PATH: ./platform-certificates/
+
+features:
+  # Include experimental features. 
+  # Set to "NO", omit setting or omit features section entirely to turn off experimental features
+  EXPERIMENTAL_FEATURES: "NO"
+
+dataset_compaction:
+  # Enable/Disable compaction on datasets.
+  # "YES" to enable.
+  # "NO" to disable.
+  COMPACTION: "NO"
+  # If compaction is enabled, PATTERN sets the frequency of compaction.
+  # H - hourly compaction.
+  # d - daily compaction.
+  # M - monthly compaction.
+  # Y - yearly compaction.
+  PATTERN: d
