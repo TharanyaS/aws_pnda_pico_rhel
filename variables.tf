@@ -70,12 +70,6 @@ variable "number_of_kafkanodes" {
       "default" = 1
 }	
 
-variable "awsAvailabilityZone" {
-      "type" = "string",
-      "default" = "us-east-1a",
-      "description" = "Availability Zone for subnet"
-}
-
 variable "whitelistSshAccess" {
       "type" = "string",
       "default" = "0.0.0.0/0",

@@ -1,5 +1,6 @@
 {
     "PR_FS_TYPE": "local",
+    "PLATFORM_GIT_REPO_URI": "https://github.com/TharanyaS/platform-salt.git",
     "PR_FS_LOCATION_PATH": "/opt/pnda/packages",
     "PLATFORM_GIT_BRANCH": "4.0",
     "HADOOP_DISTRO": "HDP",

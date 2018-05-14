@@ -52,10 +52,7 @@ def clone_git_repo(repo_url, branch):
     pnda_path = os.path.join(current_path, 'pnda-cli')
     if os.path.exists(pnda_path):
         shutil.rmtree(pnda_path, ignore_errors=True)
-    repo = Repo.clone_from(repo_url, pnda_path)
-    os.chdir('pnda-cli')
-    run_command("git checkout {0}" .format(branch))
-    os.chdir(current_path)
+    run_command("git clone -b {} {}" .format(branch, repo_url))
     return pnda_path
 
      
@@ -163,7 +160,7 @@ def deploy_pnda(args, pnda_path, json_path):
 def main():
     args = get_args()
     json_file_name = create_production_json_file()
-    pnda_path = clone_git_repo("https://github.com/pndaproject/pnda-cli.git", args.branch)
+    pnda_path = clone_git_repo("https://github.com/TharanyaS/pnda-cli.git", args.branch)
     json_path = copy_key_and_json_file(args.keypair, json_file_name)
     update_pnda_yaml(args.mirror_ip, args.access_key, args.secret_key, args.region, args.branch, args.user)
     deploy_pnda(args, pnda_path, json_path)

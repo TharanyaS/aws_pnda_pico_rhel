@@ -24,7 +24,7 @@ resource "aws_instance" "edge" {
   instance_type = "${var.EdgeFlavor}"
   key_name = "${var.ssh_key_name}"
   instance_initiated_shutdown_behavior = "stop"
-  associate_public_ip_address = false
+  associate_public_ip_address = "false"
   security_groups = ["${aws_security_group.pndaSg.name}", "${aws_security_group.sshSg.name}", "${aws_security_group.UISg.name}"]
   root_block_device {
   volume_size = 30
@@ -48,7 +48,7 @@ resource "aws_instance" "mgr-1" {
   key_name = "${var.ssh_key_name}"
   monitoring = "false"
   instance_initiated_shutdown_behavior = "stop" 
-  associate_public_ip_address = false
+  associate_public_ip_address = "false"
   security_groups = ["${aws_security_group.pndaSg.name}", "${aws_security_group.sshSg.name}", "${aws_security_group.UISg.name}"]
   ebs_block_device = [{
     device_name = "/dev/sda1"
@@ -133,13 +133,11 @@ resource "aws_eip" "mgr-1" {
 }
 
 resource "aws_eip" "kafka" {
-  count = "${var.number_of_kafkanodes}"
-  instance = "${aws_instance.kafka.*.id}"
+  instance = "${aws_instance.kafka.id}"
 }
 
 resource "aws_eip" "dn" {
-  count      = "${var.number_of_datanodes}"
-  instance = "${aws_instance.dn.*.id}"
+  instance = "${aws_instance.dn.id}"
 }
 
 resource "aws_security_group" "kafkaSg" {
@@ -327,7 +325,7 @@ resource "null_resource" "keypermission" {
 
 resource "local_file" "cluster_ip" {
   depends_on = ["aws_instance.bastion", "aws_instance.edge", "aws_instance.mgr-1", "aws_instance.kafka", "aws_instance.dn"]
-  content     = "bastion_private_ip: ${ aws_instance.bastion.private_ip } \npublic_ip: ${ aws_instance.bastion.public_ip } \nhadoop-edge_private_ip: ${ aws_instance.edge.private_ip } \nhadoop-mgr-1_private_ip: ${ aws_instance.mgr-1.private_ip }\nhadoop-dn_private_ip: [${join(",",aws_instance.dn.*.private_ip)}] \nkafka_private_ip: [${join(",", aws_instance.kafka.*.private_ip)}]"
+  content     = "bastion_private_ip: ${ aws_instance.bastion.private_ip } \npublic_ip: ${ aws_eip.bastion.public_ip } \nhadoop-edge_private_ip: ${ aws_instance.edge.private_ip } \nhadoop-mgr-1_private_ip: ${ aws_instance.mgr-1.private_ip }\nhadoop-dn_private_ip: [${join(",",aws_instance.dn.*.private_ip)}] \nkafka_private_ip: [${join(",", aws_instance.kafka.*.private_ip)}]"
   filename = "${path.cwd}/output.yaml"
 }
 
