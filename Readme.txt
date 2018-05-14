@@ -1,4 +1,4 @@
-# PNDA pico - ubuntu
+# PNDA pico - rhel
 1. Install git
 	Ubuntu: apt-get install -y git
 	RHEL: yum install -y git
