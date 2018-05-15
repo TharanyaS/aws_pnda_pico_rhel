@@ -31,6 +31,7 @@ init_logging()
 
 
 def run_command(command):
+    print command
     try:
         process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
         while True:
@@ -153,6 +154,7 @@ def deploy_pnda(args, pnda_path, json_path):
         command = 'python pnda-cli.py create -e {} -s {} -m {} -f {} ' .format(args.cluster_name, args.keypair, json_path, args.flavor)
         FILE_LOGGER.info("Executing pnda-cli.py file")
         run_command(command)
+        FILE_LOGGER.info("Please find socks proxy file in pnda-cli/cli folder...")
     except Exception as error:
         FILE_LOGGER(str(error))
 
