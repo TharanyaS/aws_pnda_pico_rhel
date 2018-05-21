@@ -6,7 +6,6 @@ import os
 import argparse
 from argparse import RawTextHelpFormatter
 import shutil
-from git import Repo
 import jinja2
 import yaml
 
@@ -44,7 +43,7 @@ def run_command(command):
         return returncode
     except Exception as error:
         CONSOLE_LOGGER.error(str(error))
-
+        raise Exception(error)
 
 def clone_git_repo(repo_url, branch):
     """Clone pnda-cli git repository and checkout specified branch."""

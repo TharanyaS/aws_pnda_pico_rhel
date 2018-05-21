@@ -133,11 +133,13 @@ resource "aws_eip" "mgr-1" {
 }
 
 resource "aws_eip" "kafka" {
-  instance = "${aws_instance.kafka.id}"
+  count = "${var.number_of_kafkanodes}"
+  instance = "${element(aws_instance.kafka.*.id, count.index)}"
 }
 
 resource "aws_eip" "dn" {
-  instance = "${aws_instance.dn.id}"
+  count = "${var.number_of_datanodes}"
+  instance = "${element(aws_instance.dn.*.id, count.index)}"
 }
 
 resource "aws_security_group" "kafkaSg" {
@@ -348,7 +350,7 @@ resource "null_resource" "install_requirement" {
 
 resource "local_file" "externalurl" {
   depends_on = [ "null_resource.deploy_PNDA" ]
-  content = "{ \"dashboard\": \"http://${aws_eip.kafka.public_ip}:10900\",\n\"dashboard\": \"http://${aws_eip.edge.public_ip}:8080\",\n\"dashboard\": \"http://${aws_eip.edge.public_ip}:5601\",\n\"dashboard\": \"http://${aws_eip.mgr-1.public_ip}:4242\",\n\"dashboard\": \"http://${aws_eip.mgr-1.public_ip}:8088\",\n\"dashboard\": \"http://${aws_eip.edge.public_ip}\"  }"
+  content = "{ \"dashboard\": \"http://${aws_eip.kafka.0.public_ip}:10900\",\n\"dashboard\": \"http://${aws_eip.edge.public_ip}:8080\",\n\"dashboard\": \"http://${aws_eip.edge.public_ip}:5601\",\n\"dashboard\": \"http://${aws_eip.mgr-1.public_ip}:4242\",\n\"dashboard\": \"http://${aws_eip.mgr-1.public_ip}:8088\",\n\"dashboard\": \"http://${aws_eip.edge.public_ip}\"  }"
   filename = "${path.cwd}/externalURL.json"
 }
 
